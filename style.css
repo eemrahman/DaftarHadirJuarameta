@@ -1,68 +1,65 @@
-/* Import Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
 body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f4f4f9;
-    color: #333;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
     text-align: center;
-    padding: 20px;
+    margin: 20px;
 }
 
 .container {
     background: white;
-    max-width: 500px;
-    margin: auto;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    margin: auto;
 }
 
-h2 {
-    color: #2C3E50;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 10px;
+h2, h3 {
+    color: #333;
 }
 
 input, select, button {
     padding: 10px;
+    margin: 5px;
     border-radius: 5px;
-    border: 1px solid #ddd;
-    font-size: 16px;
-}
-
-.btn-submit {
-    background: #2ECC71;
-    color: white;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-}
-
-.btn-submit:hover {
-    background: #27AE60;
+    border: 1px solid #ccc;
 }
 
 .btn-location {
-    background: #3498DB;
+    background-color: #007BFF;
     color: white;
-    font-weight: bold;
     border: none;
     cursor: pointer;
 }
 
-.btn-location:hover {
-    background: #2980B9;
+.btn-submit {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-map {
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
 }
 
 .status-text {
     font-size: 14px;
-    margin: 10px 0;
+    color: red;
 }
 
 .success {
@@ -71,37 +68,4 @@ input, select, button {
 
 .error {
     color: red;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-table, th, td {
-    border: 1px solid #ddd;
-}
-
-th, td {
-    padding: 10px;
-    text-align: center;
-}
-
-th {
-    background: #2C3E50;
-    color: white;
-}
-
-.btn-map {
-    background: #E74C3C;
-    color: white;
-    border: none;
-    cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 5px;
-}
-
-.btn-map:hover {
-    background: #C0392B;
 }
