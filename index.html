@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Hadir</title>
+    <title>JuaraMeta - Daftar Hadir</title>
     <link rel="stylesheet" href="styles.css">
     <script>
         const scriptURL = "https://script.google.com/macros/s/AKfycbyib14Bqwor_C8obsmnTshVB2lOE6ttM6MlL5SteMXNiX-l5Zt30FTpzNqZWt8LZK2B9Q/exec"; 
@@ -14,15 +14,14 @@
             if ("connection" in navigator) {
                 let connection = navigator.connection;
                 if (connection.type === "wifi") {
-                    // Tidak bisa mendapatkan SSID langsung dari browser, jadi tampilkan peringatan
-                    alert("Pastikan Anda terhubung ke WiFi 'aiko'.");
-                    isConnectedToAiko = confirm("Apakah Anda terhubung ke WiFi 'aiko'?");
+                    alert("🔗 Pastikan Anda terhubung ke WiFi aiko untuk menggunakan JuaraMeta.");
+                    isConnectedToAiko = confirm("Apakah Anda terhubung ke WiFi aiko?");
                 } else {
-                    alert("Anda harus terhubung ke WiFi untuk menggunakan aplikasi ini.");
+                    alert("⚠️ Anda harus terhubung ke WiFi untuk menggunakan JuaraMeta.");
                 }
             } else {
-                alert("Browser Anda tidak mendukung deteksi jaringan. Harap pastikan Anda terhubung ke WiFi 'aiko'.");
-                isConnectedToAiko = confirm("Apakah Anda terhubung ke WiFi 'aiko'?");
+                alert("⚠️ Browser tidak mendukung deteksi jaringan. Pastikan Anda terhubung ke WiFi Meta.");
+                isConnectedToAiko = confirm("Apakah Anda terhubung ke WiFi Meta?");
             }
             document.getElementById("btn-submit").disabled = !isConnectedToAiko;
         }
@@ -37,19 +36,19 @@
                         document.getElementById("lokasi-status").classList.add("success");
                     },
                     (error) => {
-                        alert("Gagal mendapatkan lokasi: " + error.message);
+                        alert("⚠️ Gagal mendapatkan lokasi: " + error.message);
                         document.getElementById("lokasi-status").innerText = "⚠️ Lokasi tidak tersedia";
                         document.getElementById("lokasi-status").classList.add("error");
                     }
                 );
             } else {
-                alert("Perangkat tidak mendukung GPS.");
+                alert("⚠️ Perangkat tidak mendukung GPS.");
             }
         }
 
         function submitForm() {
             if (!isConnectedToAiko) {
-                alert("Anda harus terhubung ke WiFi 'aiko' untuk mengisi daftar hadir.");
+                alert("❌ Anda harus terhubung ke WiFi Meta untuk mengisi daftar hadir di JuaraMeta.");
                 return;
             }
 
@@ -61,11 +60,11 @@
                 return;
             }
             if (!nama || !status) {
-                alert("Harap isi semua data!");
+                alert("⚠️ Harap isi semua data!");
                 return;
             }
             if (latitude === null || longitude === null) {
-                alert("Harap izinkan lokasi terlebih dahulu!");
+                alert("⚠️ Harap izinkan lokasi terlebih dahulu!");
                 return;
             }
 
@@ -76,7 +75,7 @@
             })
             .then(response => response.text())
             .then(() => {
-                alert("✅ Data berhasil dikirim!");
+                alert("✅ Data berhasil dikirim ke JuaraMeta!");
                 document.getElementById("nama").value = "";
                 document.getElementById("status").value = "";
                 loadData();
@@ -134,7 +133,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>📋 Daftar Hadir</h2>
+        <h2>📋 JuaraMeta - Daftar Hadir</h2>
         <button class="btn-location" onclick="requestLocation()">📍 Izinkan Lokasi</button>
         <p id="lokasi-status" class="status-text">⚠️ Lokasi belum diizinkan</p>
         <div class="form-group">
