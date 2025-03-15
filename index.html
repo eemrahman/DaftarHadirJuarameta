@@ -8,6 +8,24 @@
     <script>
         const scriptURL = "https://script.google.com/macros/s/AKfycbyib14Bqwor_C8obsmnTshVB2lOE6ttM6MlL5SteMXNiX-l5Zt30FTpzNqZWt8LZK2B9Q/exec"; 
         let latitude = null, longitude = null;
+        let isConnectedToAiko = false;
+
+        async function checkWiFi() {
+            if ("connection" in navigator) {
+                let connection = navigator.connection;
+                if (connection.type === "wifi") {
+                    // Tidak bisa mendapatkan SSID langsung dari browser, jadi tampilkan peringatan
+                    alert("Pastikan Anda terhubung ke WiFi 'aiko'.");
+                    isConnectedToAiko = confirm("Apakah Anda terhubung ke WiFi 'aiko'?");
+                } else {
+                    alert("Anda harus terhubung ke WiFi untuk menggunakan aplikasi ini.");
+                }
+            } else {
+                alert("Browser Anda tidak mendukung deteksi jaringan. Harap pastikan Anda terhubung ke WiFi 'aiko'.");
+                isConnectedToAiko = confirm("Apakah Anda terhubung ke WiFi 'aiko'?");
+            }
+            document.getElementById("btn-submit").disabled = !isConnectedToAiko;
+        }
 
         function requestLocation() {
             if ("geolocation" in navigator) {
@@ -30,21 +48,22 @@
         }
 
         function submitForm() {
+            if (!isConnectedToAiko) {
+                alert("Anda harus terhubung ke WiFi 'aiko' untuk mengisi daftar hadir.");
+                return;
+            }
+
             const nama = document.getElementById("nama").value.trim();
             const status = document.getElementById("status").value;
-            
-            // Validasi nama hanya boleh huruf dan spasi
             const regexNama = /^[A-Za-z\s]+$/;
             if (!nama.match(regexNama)) {
                 alert("❌ Nama hanya boleh mengandung huruf dan spasi!");
                 return;
             }
-
             if (!nama || !status) {
                 alert("Harap isi semua data!");
                 return;
             }
-
             if (latitude === null || longitude === null) {
                 alert("Harap izinkan lokasi terlebih dahulu!");
                 return;
@@ -82,8 +101,6 @@
                     data.slice(1).forEach(row => {
                         let timestamp = new Date(row[0]);
                         let rowDate = timestamp.toISOString().split("T")[0];
-
-                        // Format WIB (GMT+7)
                         let options = { timeZone: "Asia/Jakarta", hour12: false, 
                             year: "numeric", month: "2-digit", day: "2-digit", 
                             hour: "2-digit", minute: "2-digit", second: "2-digit" 
@@ -100,32 +117,26 @@
                             </tr>`;
                         }
                     });
-
                     document.getElementById("dataTable").innerHTML = tableContent;
                 })
                 .catch(error => console.error("Error:", error));
         }
 
-        setInterval(loadData, 5000);
-
         function openMap(lat, lon) {
             window.open(`https://www.google.com/maps?q=${lat},${lon}`, "_blank");
         }
 
-        window.onload = loadData;
-
-        document.getElementById("nama").addEventListener("input", function(event) {
-            this.value = this.value.replace(/[^A-Za-z\s]/g, "");
-        });
+        window.onload = function() {
+            checkWiFi();
+            loadData();
+        };
     </script>
 </head>
 <body>
     <div class="container">
         <h2>📋 Daftar Hadir</h2>
-
         <button class="btn-location" onclick="requestLocation()">📍 Izinkan Lokasi</button>
         <p id="lokasi-status" class="status-text">⚠️ Lokasi belum diizinkan</p>
-
         <div class="form-group">
             <input type="text" id="nama" placeholder="📝 Nama">
             <select id="status">
@@ -134,9 +145,8 @@
                 <option value="Tidak Hadir">❌ Tidak Hadir</option>
                 <option value="Sakit">🤒 Sakit</option>
             </select>
-            <button class="btn-submit" onclick="submitForm()">📨 Kirim</button>
+            <button class="btn-submit" id="btn-submit" onclick="submitForm()" disabled>📨 Kirim</button>
         </div>
-
         <h3>📊 Data Kehadiran</h3>
         <table id="dataTable"></table>
     </div>
