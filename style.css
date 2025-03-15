@@ -69,3 +69,29 @@ th, td {
 .error {
     color: red;
 }
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 300px;
+    margin: 20% auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.close-btn {
+    float: right;
+    font-size: 20px;
+    cursor: pointer;
+}
+
