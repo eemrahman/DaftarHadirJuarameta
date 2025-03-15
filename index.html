@@ -8,23 +8,6 @@
     <script>
         const scriptURL = "https://script.google.com/macros/s/AKfycbyib14Bqwor_C8obsmnTshVB2lOE6ttM6MlL5SteMXNiX-l5Zt30FTpzNqZWt8LZK2B9Q/exec"; 
         let latitude = null, longitude = null;
-        let isConnectedToAiko = false;
-
-        async function checkWiFi() {
-            if ("connection" in navigator) {
-                let connection = navigator.connection;
-                if (connection.type === "wifi") {
-                    alert("🔗 Pastikan Anda terhubung ke WiFi aiko untuk menggunakan JuaraMeta.");
-                    isConnectedToAiko = confirm("Apakah Anda terhubung ke WiFi aiko?");
-                } else {
-                    alert("⚠️ Anda harus terhubung ke WiFi untuk menggunakan JuaraMeta.");
-                }
-            } else {
-                alert("⚠️ Browser tidak mendukung deteksi jaringan. Pastikan Anda terhubung ke WiFi Meta.");
-                isConnectedToAiko = confirm("Apakah Anda terhubung ke WiFi Meta?");
-            }
-            document.getElementById("btn-submit").disabled = !isConnectedToAiko;
-        }
 
         function requestLocation() {
             if ("geolocation" in navigator) {
@@ -47,11 +30,6 @@
         }
 
         function submitForm() {
-            if (!isConnectedToAiko) {
-                alert("❌ Anda harus terhubung ke WiFi Meta untuk mengisi daftar hadir di JuaraMeta.");
-                return;
-            }
-
             const nama = document.getElementById("nama").value.trim();
             const status = document.getElementById("status").value;
             const regexNama = /^[A-Za-z\s]+$/;
@@ -126,7 +104,6 @@
         }
 
         window.onload = function() {
-            checkWiFi();
             loadData();
         };
     </script>
@@ -144,7 +121,7 @@
                 <option value="Tidak Hadir">❌ Tidak Hadir</option>
                 <option value="Sakit">🤒 Sakit</option>
             </select>
-            <button class="btn-submit" id="btn-submit" onclick="submitForm()" disabled>📨 Kirim</button>
+            <button class="btn-submit" id="btn-submit" onclick="submitForm()">📨 Kirim</button>
         </div>
         <h3>📊 Data Kehadiran</h3>
         <table id="dataTable"></table>
