@@ -63,27 +63,41 @@
         .then(response => response.json())
         .then(data => {
             let tableContent = `<tr>
-                <th>Timestamp</th>
+                <th>Waktu</th>
                 <th>Nama</th>
                 <th>Status</th>
                 <th>Lokasi</th>
                 <th>Aksi</th>
             </tr>`;
 
+            // Ambil tanggal hari ini dalam format YYYY-MM-DD
+            let today = new Date().toISOString().split("T")[0];
+
             data.slice(1).forEach(row => {
-                tableContent += `<tr>
-                    <td>${row[0]}</td>
-                    <td>${row[1]}</td>
-                    <td>${row[2]}</td>
-                    <td>📍 ${row[3]}, ${row[4]}</td>
-                    <td><button class="btn-map" onclick="openMap(${row[3]}, ${row[4]})">Lihat Lokasi</button></td>
-                </tr>`;
+                let timestamp = new Date(row[0]); // Konversi timestamp ke Date object
+                let rowDate = timestamp.toISOString().split("T")[0]; // Ambil bagian tanggal saja
+
+                // Konversi timestamp ke WIB (GMT+7)
+                let options = { timeZone: "Asia/Jakarta", hour12: false, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" };
+                let localTime = new Intl.DateTimeFormat("id-ID", options).format(timestamp);
+
+                // Filter hanya data dengan tanggal hari ini
+                if (rowDate === today) {
+                    tableContent += `<tr>
+                        <td>${localTime}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[2]}</td>
+                        <td>📍 ${row[3]}, ${row[4]}</td>
+                        <td><button class="btn-map" onclick="openMap(${row[3]}, ${row[4]})">Lihat Lokasi</button></td>
+                    </tr>`;
+                }
             });
 
             document.getElementById("dataTable").innerHTML = tableContent;
         })
         .catch(error => console.error("Error:", error));
 }
+
 
 // Panggil loadData() setiap 5 detik agar data selalu update
 setInterval(loadData, 5000);
