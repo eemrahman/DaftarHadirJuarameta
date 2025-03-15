@@ -1,35 +1,135 @@
-function submitForm() {
-    const nama = document.getElementById("nama").value.trim();
-    const status = document.getElementById("status").value;
-    
-    // Validasi nama hanya boleh mengandung huruf dan spasi
-    const regexNama = /^[A-Za-z\s]+$/;
-    if (!nama.match(regexNama)) {
-        alert("❌ Nama hanya boleh mengandung huruf dan spasi!");
-        return;
-    }
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Hadir</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        const scriptURL = "https://script.google.com/macros/s/AKfycbyib14Bqwor_C8obsmnTshVB2lOE6ttM6MlL5SteMXNiX-l5Zt30FTpzNqZWt8LZK2B9Q/exec"; // Ganti dengan Deployment URL dari Apps Script
+        let latitude = null, longitude = null;
 
-    if (!nama || !status) {
-        alert("Harap isi semua data!");
-        return;
-    }
+        function requestLocation() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        latitude = position.coords.latitude;
+                        longitude = position.coords.longitude;
+                        document.getElementById("lokasi-status").innerText = 📍 Lokasi: ${latitude}, ${longitude};
+                        document.getElementById("lokasi-status").classList.add("success");
+                    },
+                    (error) => {
+                        alert("Gagal mendapatkan lokasi: " + error.message);
+                        document.getElementById("lokasi-status").innerText = "⚠️ Lokasi tidak tersedia";
+                        document.getElementById("lokasi-status").classList.add("error");
+                    }
+                );
+            } else {
+                alert("Perangkat tidak mendukung GPS.");
+            }
+        }
 
-    if (latitude === null || longitude === null) {
-        alert("Harap izinkan lokasi terlebih dahulu!");
-        return;
-    }
+        function submitForm() {
+            const nama = document.getElementById("nama").value;
+            const status = document.getElementById("status").value;
 
-    fetch(scriptURL, {
-        method: "POST",
-        body: new URLSearchParams({ nama, status, latitude, longitude }),
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    })
-    .then(response => response.text())
-    .then(() => {
-        alert("✅ Data berhasil dikirim!");
-        document.getElementById("nama").value = "";
-        document.getElementById("status").value = "";
-        loadData();
-    })
-    .catch(error => console.error("Error:", error));
+            if (!nama || !status) {
+                alert("Harap isi semua data!");
+                return;
+            }
+
+            if (latitude === null || longitude === null) {
+                alert("Harap izinkan lokasi terlebih dahulu!");
+                return;
+            }
+
+            fetch(scriptURL, {
+                method: "POST",
+                body: new URLSearchParams({ nama, status, latitude, longitude }),
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            })
+            .then(response => response.text())
+            .then(() => {
+                alert("✅ Data berhasil dikirim!");
+                document.getElementById("nama").value = "";
+                document.getElementById("status").value = "";
+                loadData();
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        function loadData() {
+    fetch(scriptURL)
+        .then(response => response.json())
+        .then(data => {
+            let tableContent = <tr>
+                <th>Waktu</th>
+                <th>Nama</th>
+                <th>Status</th>
+                <th>Lokasi</th>
+                <th>Aksi</th>
+            </tr>;
+
+            // Ambil tanggal hari ini dalam format YYYY-MM-DD
+            let today = new Date().toISOString().split("T")[0];
+
+            data.slice(1).forEach(row => {
+                let timestamp = new Date(row[0]); // Konversi timestamp ke Date object
+                let rowDate = timestamp.toISOString().split("T")[0]; // Ambil bagian tanggal saja
+
+                // Konversi timestamp ke WIB (GMT+7)
+                let options = { timeZone: "Asia/Jakarta", hour12: false, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" };
+                let localTime = new Intl.DateTimeFormat("id-ID", options).format(timestamp);
+
+                // Filter hanya data dengan tanggal hari ini
+                if (rowDate === today) {
+                    tableContent += <tr>
+                        <td>${localTime}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[2]}</td>
+                        <td>📍 ${row[3]}, ${row[4]}</td>
+                        <td><button class="btn-map" onclick="openMap(${row[3]}, ${row[4]})">Lihat Lokasi</button></td>
+                    </tr>;
+                }
+            });
+
+            document.getElementById("dataTable").innerHTML = tableContent;
+        })
+        .catch(error => console.error("Error:", error));
 }
+
+
+// Panggil loadData() setiap 5 detik agar data selalu update
+setInterval(loadData, 5000);
+
+
+        function openMap(lat, lon) {
+            window.open(https://www.google.com/maps?q=${lat},${lon}, "_blank");
+        }
+
+        window.onload = loadData;
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>📋 Daftar Hadir</h2>
+
+        <button class="btn-location" onclick="requestLocation()">📍 Izinkan Lokasi</button>
+        <p id="lokasi-status" class="status-text">⚠️ Lokasi belum diizinkan</p>
+
+        <div class="form-group">
+            <input type="text" id="nama" placeholder="📝 Nama">
+            <select id="status">
+                <option value="">📌 Pilih Status</option>
+                <option value="Hadir">✅ Hadir</option>
+                <option value="Tidak Hadir">❌ Tidak Hadir</option>
+                <option value="Sakit">🤒 Sakit</option>
+            </select>
+            <button class="btn-submit" onclick="submitForm()">📨 Kirim</button>
+        </div>
+
+        <h3>📊 Data Kehadiran</h3>
+        <table id="dataTable"></table>
+    </div>
+</body>
+</html>
